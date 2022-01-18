@@ -1,0 +1,42 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "amazingmart",
+						"type": "DatasetReference"
+					},
+					"name": "listoforders"
+				},
+				{
+					"dataset": {
+						"referenceName": "breakdownsales",
+						"type": "DatasetReference"
+					},
+					"name": "breakdownsales"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Join1"
+				},
+				{
+					"name": "Sort1"
+				}
+			],
+			"script": "source(output(\n\t\t{Order ID} as string,\n\t\t{Order Date} as string,\n\t\t{Customer Name} as string,\n\t\tCity as string,\n\t\tCountry as string,\n\t\tRegion as string,\n\t\tSegment as string,\n\t\t{Ship Date} as string,\n\t\t{Ship Mode} as string,\n\t\tState as string,\n\t\tCategory as string,\n\t\tKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> listoforders\nsource(output(\n\t\t{Order ID} as string,\n\t\t{Product Name} as string,\n\t\tDiscount as string,\n\t\tSales as string,\n\t\tProfit as string,\n\t\tQuantity as string,\n\t\tCategory as string,\n\t\t{Sub-Category} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> breakdownsales\nlistoforders, breakdownsales join(listoforders@Category == breakdownsales@Category,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 sort(asc(listoforders@{Order ID}, true)) ~> Sort1\nSort1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['output'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> sink1"
+		}
+	}
+}
