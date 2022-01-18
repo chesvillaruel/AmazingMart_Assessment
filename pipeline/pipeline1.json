@@ -13,7 +13,16 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "input//P1-AmazingMartEU2-Latest2.xls"
+					},
+					{
+						"name": "Destination",
+						"value": "output//output.xls"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "ExcelSource",
@@ -31,7 +40,7 @@
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
 							"quoteAllText": true,
-							"fileExtension": ""
+							"fileExtension": ".csv"
 						}
 					},
 					"enableStaging": false,
